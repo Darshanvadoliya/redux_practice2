@@ -36,3 +36,28 @@
     transform: rotate(360deg);
   }
 }
+.modal-content {
+  transition: all 0.3s ease-in-out;
+  border-radius: 12px;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #8099b4, #43474b);
+}
+
+input:focus, textarea:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  transform: scale(1.03);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f0f0f0;
+}
+

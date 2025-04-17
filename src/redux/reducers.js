@@ -12,6 +12,8 @@ export function todo(state = initialstate, action) {
             return state.map((todo) => (todo.id === action.payload.id ? action.payload : todo))
         case "RESTOR_TODO":
             return state.map((todo) => (todo.id === action.payload.id ? action.payload : todo))
+        case 'PERMANENT_DELETE':
+            return state.filter(todo => todo.id !== action.payload);
         default:
             return state
     }

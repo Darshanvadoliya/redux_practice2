@@ -1,21 +1,21 @@
-import React from 'react';
+import React, { useRef, } from 'react'
 import { useForm } from 'react-hook-form';
-import { store } from '../redux/store';
 import IndexPortal from '../services/portal';
+import { store } from '../redux/store';
 
-const TaskForm = () => {
-  const { register, handleSubmit, reset, formState: { errors }, setError } = useForm();
 
-  const onSubmit = (data) => {
-    const isTitleExists = store.getState().some(task =>
-      task.todo_title.trim().toLowerCase() === data.todo_title.trim().toLowerCase()
-    );
+function TaskForm() {
+  const { register, handleSubmit, reset, formState: { errors }, setError } = useForm()
+  const closeBtnRef = useRef()
+  function onSubmit(data) {
 
-    if (isTitleExists) {
-      setError('todo_title', { message: 'A todo with this title already exists' });
+    const isTitle = store.getState().some((task) => task.todo_title.trim().toLowerCase() === data.todo_title.trim().toLowerCase())
+    if (isTitle) {
+      setError('todo_title', {
+        message: 'A todo with this title already exists',
+      })
       return;
     }
-
     const newTodo = {
       id: Date.now(),
       todo_title: data.todo_title,
@@ -25,47 +25,64 @@ const TaskForm = () => {
     };
 
     store.dispatch({ type: 'ADD_TODO', payload: newTodo });
-    reset();
-  };
+    reset()
 
+    if (closeBtnRef.current) {
+      closeBtnRef.current.click()
+    }
+  }
   return (
     <>
-      <button className="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#taskModal">Add Task</button>
-
       <IndexPortal>
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Add Task</h5>
-            <button className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div className="modal-content border-0 shadow rounded-4 animate__animated animate__fadeInDown">
+          <div className="modal-header text-white rounded-top-4">
+            <h1 className="modal-title fs-5">📝 Add New Task</h1>
+            <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" ref={closeBtnRef}></button>
           </div>
-          <div className="modal-body">
+
+          <div className="modal-body p-4">
             <form onSubmit={handleSubmit(onSubmit)}>
-              <label>Title</label>
-              <input
-                {...register('todo_title', { required: 'This is required' })}
-                className="form-control mb-2"
-                placeholder="Add Title"
-              />
-              {errors.todo_title && <p className="text-danger">{errors.todo_title.message}</p>}
+              <div className="mb-3">
+                <label className="form-label fw-semibold">Title</label>
+                <input
+                  type='text'
+                  placeholder='e.g. Grocery Shopping'
+                  {...register('todo_title', { required: "This is required" })}
+                  className={`form-control ${errors.todo_title ? 'is-invalid' : ''} shadow-sm`}
+                />
+                {errors.todo_title && (
+                  <div className="invalid-feedback">{errors.todo_title.message}</div>
+                )}
+              </div>
 
-              <label>Description</label>
-              <textarea
-                {...register('description', { required: 'Please add description' })}
-                className="form-control mb-2"
-                placeholder="Description"
-              />
-              {errors.description && <p className="text-danger">{errors.description.message}</p>}
+              <div className="mb-3">
+                <label className="form-label fw-semibold">Description</label>
+                <textarea
+                  placeholder='Write task details...'
+                  {...register('description', { required: "Please add description" })}
+                  className={`form-control ${errors.description ? 'is-invalid' : ''} shadow-sm`}
+                  rows={4}
+                />
+                {errors.description && (
+                  <div className="invalid-feedback">{errors.description.message}</div>
+                )}
+              </div>
 
-              <div className="modal-footer">
-                <button className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button className="btn btn-primary" type="submit">Save Task</button>
+              <div className="modal-footer border-0 mt-4">
+                <button type="button" className="btn btn-outline-secondary" data-bs-dismiss="modal">
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary px-4 fw-bold shadow-sm">
+                  Save Task 🚀
+                </button>
               </div>
             </form>
           </div>
         </div>
       </IndexPortal>
-    </>
-  );
-};
 
-export default TaskForm;
+    </>
+  )
+}
+
+export default TaskForm
